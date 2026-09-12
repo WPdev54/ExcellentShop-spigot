@@ -1,4 +1,4 @@
-name: Build ExcellentShop
+name: Build ExcellentShop Complete
 on: [workflow_dispatch]
 jobs:
   build:
@@ -21,11 +21,11 @@ jobs:
         touch dummy.jar
         mvn install:install-file -Dfile=dummy.jar -DgroupId=net.alex9849.advancedregionmarket -DartifactId=advancedregionmarket -Dversion=3.5.3 -Dpackaging=jar
         
-    - name: Build ExcellentShop
-      run: mvn clean package -Dmaven.compiler.failOnError=false
+    - name: Build ExcellentShop with Shade
+      run: mvn clean package shade:shade -Dmaven.compiler.failOnError=false
       
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ExcellentShop
-        path: "**/target/*.jar"
+        name: ExcellentShop-Shaded
+        path: "target/*.jar"
