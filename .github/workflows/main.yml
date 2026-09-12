@@ -4,31 +4,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
         
-    - name: Checkout NightCore dependency
-      uses: actions/checkout@v4
-      with:
-        repository: nulli0n/nightcore-spigot
-        path: nightcore-spigot
-        
-    - name: Install NightCore to local Maven
-      run: cd nightcore-spigot && mvn clean install
-      
-    - name: Checkout ExcellentShop
-      uses: actions/checkout@v4
-      with:
-        path: ExcellentShop-spigot
+    - name: Inject NightCore into Cloud Maven
+      run: |
+        mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=main -Dversion=2.16.4 -Dpackaging=jar
+        mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=spigot -Dversion=2.16.4 -Dpackaging=jar
         
     - name: Build ExcellentShop
-      run: cd ExcellentShop-spigot && mvn clean package
+      run: mvn clean package
       
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ExcellentShop
-        path: ExcellentShop-spigot/target/*.jar
+        path: target/*.jar
