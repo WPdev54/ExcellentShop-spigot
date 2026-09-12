@@ -1,4 +1,4 @@
-name: Build ExcellentShop Complete
+name: Build ExcellentShop Final
 on: [workflow_dispatch]
 jobs:
   build:
@@ -13,19 +13,20 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         
-    - name: Inject NightCore & Bypass Dead Dependencies
+    - name: Inject NightCore & Strip Dead Modules
       run: |
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=main -Dversion=2.16.4 -Dpackaging=jar
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=spigot -Dversion=2.16.4 -Dpackaging=jar
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=utils -Dversion=2.16.4 -Dpackaging=jar
-        touch dummy.jar
-        mvn install:install-file -Dfile=dummy.jar -DgroupId=net.alex9849.advancedregionmarket -DartifactId=advancedregionmarket -Dversion=3.5.3 -Dpackaging=jar
         
-    - name: Build ExcellentShop with Shade
-      run: mvn clean package shade:shade -Dmaven.compiler.failOnError=false
+        # Remove the dead integration-advanced-region-market module from pom.xml
+        sed -i '/integration-advanced-region-market/d' pom.xml
+        
+    - name: Build ExcellentShop Core
+      run: mvn clean package -Dmaven.compiler.failOnError=false
       
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ExcellentShop-Shaded
-        path: "target/*.jar"
+        name: ExcellentShop-Real-Core
+        path: "Core/target/Core-*.jar"
