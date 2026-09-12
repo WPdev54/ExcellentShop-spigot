@@ -1,4 +1,4 @@
-name: Build ExcellentShop Final
+name: Build ExcellentShop Final Fix
 on: [workflow_dispatch]
 jobs:
   build:
@@ -13,14 +13,16 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         
-    - name: Inject NightCore & Strip Dead Modules
+    - name: Inject NightCore & Purge Dead Module
       run: |
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=main -Dversion=2.16.4 -Dpackaging=jar
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=spigot -Dversion=2.16.4 -Dpackaging=jar
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=utils -Dversion=2.16.4 -Dpackaging=jar
         
-        # Remove the dead integration-advanced-region-market module from pom.xml
+        # Completely wipe the dead integration folder and entry
+        rm -rf integration-advanced-region-market
         sed -i '/integration-advanced-region-market/d' pom.xml
+        sed -i '/integration-advanced-region-market/d' Core/pom.xml
         
     - name: Build ExcellentShop Core
       run: mvn clean package -Dmaven.compiler.failOnError=false
