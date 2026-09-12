@@ -13,13 +13,15 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         
-    - name: Inject NightCore into Cloud Maven
+    - name: Inject NightCore & Bypass Dead Dependencies
       run: |
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=main -Dversion=2.16.4 -Dpackaging=jar
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=spigot -Dversion=2.16.4 -Dpackaging=jar
         mvn install:install-file -Dfile=nightcore-2.16.4.jar -DgroupId=su.nightexpress.nightcore -DartifactId=utils -Dversion=2.16.4 -Dpackaging=jar
+        touch dummy.jar
+        mvn install:install-file -Dfile=dummy.jar -DgroupId=net.alex9849.advancedregionmarket -DartifactId=advancedregionmarket -Dversion=3.5.3 -Dpackaging=jar
         
-    - name: Build ExcellentShop (Ignore Integration Errors)
+    - name: Build ExcellentShop
       run: mvn clean package -Dmaven.compiler.failOnError=false
       
     - name: Upload Artifact
